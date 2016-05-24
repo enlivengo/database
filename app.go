@@ -33,6 +33,10 @@ func GetDatabase(namespace ...string) *gorm.DB {
 
 // NewApp creates and returns an instance of the database app
 func NewApp(namespace ...string) *App {
+	if len(databases) == 0 {
+		databases = make(map[string]*gorm.DB)
+	}
+
 	var name string
 	if len(namespace) > 0 {
 		name = namespace[0]
