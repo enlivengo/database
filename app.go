@@ -14,8 +14,10 @@ import (
 	_ "github.com/jinzhu/gorm/dialects/sqlite"
 )
 
+var databases map[string]*gorm.DB
+
 // GetDatabase returns the requested database
-func GetDatabase(ev *enliven.Enliven, namespace ...string) *gorm.DB {
+func GetDatabase(namespace ...string) *gorm.DB {
 	var name string
 	if len(namespace) > 0 {
 		name = namespace[0]
@@ -23,7 +25,7 @@ func GetDatabase(ev *enliven.Enliven, namespace ...string) *gorm.DB {
 		name = "default"
 	}
 
-	if db, ok := ev.GetService(name + "_database").(*gorm.DB); ok {
+	if db, ok := databases[name+"_database"]; ok {
 		return db
 	}
 	return nil
@@ -142,7 +144,7 @@ func (da *App) Initialize(ev *enliven.Enliven) {
 		panic(err)
 	}
 
-	ev.AddService(da.namespace+"_database", db)
+	databases[da.namespace+"_database"] = db
 }
 
 // GetName gets the database app name
